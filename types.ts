@@ -19,6 +19,8 @@ export interface Product {
     size: Size;
     color: Color;
     images: Image[];
+    stock: number; // existing field
+    quantity: number; // new field
 };
 
 export interface Size {

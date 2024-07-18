@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { toast } from "react-hot-toast";
-import { X } from "lucide-react";
+import { X, Minus, Plus } from "lucide-react";
 
 import IconButton from "@/components/ui/icon-button";
 import Currency from "@/components/ui/currency";
@@ -8,17 +8,27 @@ import useCart from "@/hooks/use-cart";
 import { Product } from "@/types";
 
 interface CartItemProps {
-    data: Product
+    data: Product;
 }
 
-const CartItem: React.FC<CartItemProps> = ({
-    data
-}) => {
+const CartItem: React.FC<CartItemProps> = ({ data }) => {
     const cart = useCart();
 
     const onRemove = () => {
         cart.removeItem(data.id);
-    }
+    };
+
+    const onAddQuantity = () => {
+        if (data.stock > cart.getItemQuantity(data.id)) {
+            cart.addItem(data);
+        } else {
+            toast.error("Not enough stock available.");
+        }
+    };
+
+    const onReduceQuantity = () => {
+        cart.reduceItem(data.id);
+    };
 
     return (
         <li className="flex py-6 border-b">
@@ -49,10 +59,18 @@ const CartItem: React.FC<CartItemProps> = ({
                         </p>
                     </div>
                     <Currency value={data.price} />
+                    <div className="flex items-center mt-2">
+                        <IconButton onClick={onReduceQuantity} icon={<Minus size={15} />} />
+                        <span className="mx-2">{cart.getItemQuantity(data.id)}</span>
+                        <IconButton onClick={onAddQuantity} icon={<Plus size={15} />} />
+                    </div>
+                    <p className="mt-1 text-sm text-gray-500">
+                        Stock: {data.stock}
+                    </p>
                 </div>
             </div>
         </li>
     );
-}
- 
+};
+
 export default CartItem;

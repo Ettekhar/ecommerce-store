@@ -1,5 +1,3 @@
-"use client";
-
 import axios from "axios";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
@@ -26,7 +24,7 @@ const Summary = () => {
   }, [searchParams, removeAll]);
 
   const totalPrice = items.reduce((total, item) => {
-    return total + Number(item.price)
+    return total + Number(item.price) * (item.quantity || 1); // Consider quantity
   }, 0);
 
   const onCheckout = async () => {
@@ -35,7 +33,7 @@ const Summary = () => {
     });
 
     window.location = response.data.url;
-  }
+  };
 
   return ( 
     <div
@@ -45,9 +43,15 @@ const Summary = () => {
         Order summary
       </h2>
       <div className="mt-6 space-y-4">
+        {items.map((item) => (
+          <div key={item.id} className="flex items-center justify-between border-t border-gray-200 pt-4">
+            <div className="text-base font-medium text-gray-900">{item.name} ({item.quantity || 1})</div>
+            <Currency value={Number(item.price) * (item.quantity || 1)} />
+          </div>
+        ))}
         <div className="flex items-center justify-between border-t border-gray-200 pt-4">
           <div className="text-base font-medium text-gray-900">Order total</div>
-         <Currency value={totalPrice} />
+          <Currency value={totalPrice} />
         </div>
       </div>
       <Button onClick={onCheckout} disabled={items.length === 0} className="w-full mt-6">
