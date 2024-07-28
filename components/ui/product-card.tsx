@@ -15,28 +15,32 @@ interface ProductCardProps {
     data: Product;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
-    data
-}) => {
+const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
     const cart = useCart();
     const previewModal = usePreviewModal();
     const router = useRouter();
 
     const handleClick = () => {
         router.push(`/product/${data?.id}`);
-    }
+    };
 
     const onPreview: MouseEventHandler<HTMLButtonElement> = (event) => {
         event.stopPropagation();
-
         previewModal.onOpen(data);
-    }
+    };
 
     const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
         event.stopPropagation();
-
         cart.addItem(data);
-    }
+    };
+
+    const calculateDiscountPrice = () => {
+        return data.price - (data.price * (data.offer / 100));
+    };
+
+    const hasOffer = data.offer > 0;
+    const discountPrice = calculateDiscountPrice();
+    const discountPercentage = data.offer;
 
     return (
         <div onClick={handleClick} className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4">
@@ -54,25 +58,39 @@ const ProductCard: React.FC<ProductCardProps> = ({
                             icon={<Expand size={20} className="text-gray-600" />}
                         />
                         <IconButton
-                            onClick={onAddToCart}
+                            onClick={handleClick}
                             icon={<ShoppingCart size={20} className="text-gray-600" />}
                         />
                     </div>
                 </div>
             </div>
-            <div>
-                <p className="font-semibold text-lg">
-                    {data.name}
-                </p>
-                <p className="text-sm text-gray-500">
-                    {data.category?.name}
-                </p>
-            </div>
-            <div className="flex items-center justify-between">
-                <Currency value={data?.price} />
+            <div className="flex flex-col gap-y-2">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <p className="font-semibold text-lg">{data.name}</p>
+                        <p className="text-sm text-gray-500">{data.category?.name}</p>
+                    </div>
+                    {hasOffer && (
+                        <div className="flex flex-col items-end">
+                            <span className="text-red-500 text-xl font-semibold">{discountPercentage}% OFF</span>
+                            <span className="line-through text-gray-500 text-lg">
+                                <Currency value={data.price} />
+                            </span>
+                        </div>
+                    )}
+                </div>
+                <div className="text-2xl font-bold">
+                    {hasOffer ? (
+                        <span className="text-green-600">
+                            <Currency value={discountPrice} />
+                        </span>
+                    ) : (
+                        <Currency value={data.price} />
+                    )}
+                </div>
             </div>
         </div>
     );
-}
- 
+};
+
 export default ProductCard;

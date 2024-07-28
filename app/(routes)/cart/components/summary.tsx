@@ -23,17 +23,44 @@ const Summary = () => {
     }
   }, [searchParams, removeAll]);
 
+  const calculateDiscountPrice = (price, offer) => {
+    return price - (price * (offer / 100));
+  };
+
   const totalPrice = items.reduce((total, item) => {
-    return total + Number(item.price) * (item.quantity || 1); // Consider quantity
+    const itemPrice = item.offer > 0 ? calculateDiscountPrice(item.price, item.offer) : item.price;
+    return total + itemPrice * (item.quantity || 1); // Consider quantity
   }, 0);
 
+  // const onCheckout = async () => {
+  //   console.log("ITEMS: ", items);
+  //   const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
+  //     products: items.map((item) => ({
+  //       id: item.id,
+  //       quantity: item.quantity || 1,
+  //       price: item.offer > 0 ? calculateDiscountPrice(item.price, item.offer) : item.price, // Send discounted price
+  //       offer: item.offer || 0 // Include offer information if available
+  //     }))
+  //   });
+  
+  //   window.location = response.data.url;
+  // };
+  
   const onCheckout = async () => {
+    console.log("ITEMS: ", items);
     const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
-      productIds: items.map((item) => item.id)
+      products: items.map((item) => ({
+        id: item.id,
+        quantity: item.quantity || 1,
+        price: item.offer > 0 ? calculateDiscountPrice(item.price, item.offer) : item.price, // Send discounted price
+        offer: item.offer || 0, // Include offer information if available
+        size: item.selectedSize // Include selected size information
+      }))
     });
-
+  
     window.location = response.data.url;
   };
+  
 
   return ( 
     <div
@@ -45,8 +72,24 @@ const Summary = () => {
       <div className="mt-6 space-y-4">
         {items.map((item) => (
           <div key={item.id} className="flex items-center justify-between border-t border-gray-200 pt-4">
-            <div className="text-base font-medium text-gray-900">{item.name} ({item.quantity || 1})</div>
-            <Currency value={Number(item.price) * (item.quantity || 1)} />
+            <div className="text-base font-medium text-gray-900">
+              {item.name} ({item.quantity || 1})
+            </div>
+            <div className="flex items-end">
+              {item.offer > 0 ? (
+                <>
+                  <Currency value={calculateDiscountPrice(item.price, item.offer) * (item.quantity || 1)} />
+                  <span className="line-through text-gray-500 text-sm ml-2">
+                    <Currency value={item.price * (item.quantity || 1)} />
+                  </span>
+                  {/* <span className="text-sm text-red-500 font-semibold ml-2">
+                    {item.offer}% OFF - Save <Currency value={(item.price * (item.quantity || 1)) - (calculateDiscountPrice(item.price, item.offer) * (item.quantity || 1))} />
+                  </span> */}
+                </>
+              ) : (
+                <Currency value={item.price * (item.quantity || 1)} />
+              )}
+            </div>
           </div>
         ))}
         <div className="flex items-center justify-between border-t border-gray-200 pt-4">
@@ -60,5 +103,5 @@ const Summary = () => {
     </div>
   );
 }
- 
+
 export default Summary;
