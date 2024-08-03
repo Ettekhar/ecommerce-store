@@ -21,6 +21,7 @@ export interface Product {
     images: Image[];
     stock: number; // existing field
     quantity: number; // new field
+    description: string;
 };
 
 export interface Size {

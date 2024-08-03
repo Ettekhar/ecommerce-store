@@ -121,3 +121,32 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
 };
 
 export default CartItem;
+
+
+ // const onCheckout = async () => {
+  //   console.log("ITEMS: ", items);
+  //   const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
+  //     products: items.map((item) => ({
+  //       id: item.id,
+  //       quantity: item.quantity || 1,
+  //       price: item.offer > 0 ? calculateDiscountPrice(item.price, item.offer) : item.price, // Send discounted price
+  //       offer: item.offer || 0 // Include offer information if available
+  //     }))
+  //   });
+  
+  //   window.location = response.data.url;
+  // };
+  // const onCheckout = async () => {
+  //   console.log("ITEMS: ", items);
+  //   const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
+  //     products: items.map((item) => ({
+  //       id: item.id,
+  //       quantity: item.quantity || 1,
+  //       price: item.offer > 0 ? calculateDiscountPrice(item.price, item.offer) : item.price, // Send discounted price
+  //       offer: item.offer || 0, // Include offer information if available
+  //       size: item.selectedSize // Include selected size information
+  //     }))
+  //   });
+  
+  //   window.location = response.data.url;
+  // };

@@ -88,9 +88,9 @@ const Info: React.FC<InfoProps> = ({ data }) => {
               </span>
             </div>
           ) : (
-            <p className="text-2xl text-gray-900">
+            <div className="text-2xl text-gray-900">
               <Currency value={data.price} />
-            </p>
+            </div>
           )}
         </div>
       </div>

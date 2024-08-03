@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { X, Minus, Plus } from "lucide-react";
-
+import { useRouter } from 'next/navigation'
 import IconButton from "@/components/ui/icon-button";
 import Currency from "@/components/ui/currency";
 import useCart from "@/hooks/use-cart";
@@ -16,6 +16,7 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
     const cart = useCart();
     const [selectedSize, setSelectedSize] = useState(data.selectedSize || null);
     const [refresh,setRefresh] = useState(false);
+    const router = useRouter();
 
     const calculateDiscountPrice = () => {
         return data.price - (data.price * (data.offer / 100));
@@ -28,6 +29,7 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
     const onRemove = () => {
         cart.removeItem(data.id, selectedSize); // Pass selectedSize to removeItem
         window.location.reload();
+        // router.refresh();
         setRefresh(!refresh);
     };
 
@@ -55,7 +57,7 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
     const discountPrice = calculateDiscountPrice();
 
     // console.log({ data, selectedSize });
-    console.log({hasOffer,discountPrice,data,selectedSize})
+    // console.log({hasOffer,discountPrice,data,selectedSize})
 
     return (
         <li className="flex py-6 border-b border-gray-300">

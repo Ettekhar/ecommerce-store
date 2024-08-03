@@ -6,11 +6,13 @@ import Button from "@/components/ui/button";
 import Currency from "@/components/ui/currency";
 import useCart from "@/hooks/use-cart";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const Summary = () => {
   const searchParams = useSearchParams();
   const items = useCart((state) => state.items);
   const removeAll = useCart((state) => state.removeAll);
+  const router = useRouter();
 
   useEffect(() => {
     if (searchParams.get('success')) {
@@ -31,34 +33,10 @@ const Summary = () => {
     const itemPrice = item.offer > 0 ? calculateDiscountPrice(item.price, item.offer) : item.price;
     return total + itemPrice * (item.quantity || 1); // Consider quantity
   }, 0);
-
-  // const onCheckout = async () => {
-  //   console.log("ITEMS: ", items);
-  //   const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
-  //     products: items.map((item) => ({
-  //       id: item.id,
-  //       quantity: item.quantity || 1,
-  //       price: item.offer > 0 ? calculateDiscountPrice(item.price, item.offer) : item.price, // Send discounted price
-  //       offer: item.offer || 0 // Include offer information if available
-  //     }))
-  //   });
   
-  //   window.location = response.data.url;
-  // };
-  
-  const onCheckout = async () => {
-    console.log("ITEMS: ", items);
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
-      products: items.map((item) => ({
-        id: item.id,
-        quantity: item.quantity || 1,
-        price: item.offer > 0 ? calculateDiscountPrice(item.price, item.offer) : item.price, // Send discounted price
-        offer: item.offer || 0, // Include offer information if available
-        size: item.selectedSize // Include selected size information
-      }))
-    });
-  
-    window.location = response.data.url;
+  const onCheckout = () => {
+    router.push('/checkout');
+    router.refresh();
   };
   
 
