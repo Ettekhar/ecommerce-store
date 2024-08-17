@@ -4,9 +4,11 @@ import { useState } from "react";
 import { Product } from "@/types";
 import Currency from "@/components/ui/currency";
 import Button from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, ShoppingBag } from "lucide-react";
 import useCart from "@/hooks/use-cart";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import usePreviewModal from "@/hooks/use-preview-modal";
 
 interface InfoProps {
   data: Product;
@@ -14,8 +16,11 @@ interface InfoProps {
 
 const Info: React.FC<InfoProps> = ({ data }) => {
   const cart = useCart();
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<{ name: string, value: string } | null>(null);
+  const [isBuyNowClicked, setIsBuyNowClicked] = useState(false); // New state to track button click
+  const previewModal = usePreviewModal();
 
   const onAddToCart = () => {
     if (quantity > data.stock) {
@@ -30,11 +35,30 @@ const Info: React.FC<InfoProps> = ({ data }) => {
     for (let i = 0; i < quantity; i++) {
       cart.addItem(data, selectedSize);
     }
-    console.log({data, selectedSize});
     toast.success("Item(s) added to cart.");
   };
-  
 
+  const onBuyNow = () => {
+    if (isBuyNowClicked) return; // Prevent multiple clicks
+
+    if (quantity > data.stock) {
+      toast.error(`Only ${data.stock} items available.`);
+      return;
+    }
+    if (!selectedSize) {
+      toast.error("Please select a size.");
+      return;
+    }
+
+    setIsBuyNowClicked(true); // Disable button after click
+
+    for (let i = 0; i < quantity; i++) {
+      cart.addItem(data, selectedSize);
+    }
+    router.push('/checkout');
+    previewModal.onClose();
+  };
+  
   const incrementQuantity = () => {
     if (quantity < data.stock) {
       setQuantity(prevQuantity => prevQuantity + 1);
@@ -56,8 +80,6 @@ const Info: React.FC<InfoProps> = ({ data }) => {
   const discountPercentage = data.offer;
   const isOutOfStock = data.stock <= 0;
   const isLowStock = data.stock > 0 && data.stock < 10;
-  
-  console.log({data});
 
   return (
     <div className="p-6 border rounded-lg shadow-md">
@@ -95,9 +117,9 @@ const Info: React.FC<InfoProps> = ({ data }) => {
         </div>
       </div>
       <hr className="my-4" />
-        <div className="mt-2 text-blue-500 text-sm">
-            Please choose a size.
-          </div>
+      <div className="mt-2 text-blue-500 text-sm">
+        Please choose a size.
+      </div>
       <div className="flex flex-col gap-y-6">
         <div className="flex items-center gap-x-4">
           <h3 className="font-semibold text-black">Size:</h3>
@@ -108,11 +130,11 @@ const Info: React.FC<InfoProps> = ({ data }) => {
                 className={`cursor-pointer p-2 border rounded-lg ${sizes.size.value === selectedSize?.value ? 'bg-blue-500 text-white' : 'bg-white'}`}
                 title={sizes.size.name}
                 onClick={() => setSelectedSize({ name: sizes.size.name, value: sizes.size.value })}
-                >
-                    <span>{sizes.size.value}</span>
-                  </div>
-                ))}
-            </div>
+              >
+                <span>{sizes.size.value}</span>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="flex gap-x-5">
           <h3 className="font-semibold text-black">Colors:</h3>
@@ -128,7 +150,7 @@ const Info: React.FC<InfoProps> = ({ data }) => {
           </div>
         </div>
       </div>
-      <div className="mt-10 flex items-center gap-x-3">
+      <div className="mt-6">
         <div className="flex items-center gap-x-2">
           <Button onClick={decrementQuantity} className="flex items-center gap-x-2">
             -
@@ -138,6 +160,8 @@ const Info: React.FC<InfoProps> = ({ data }) => {
             +
           </Button>
         </div>
+      </div>
+      <div className="mt-10 flex items-center gap-x-3">
         <Button
           onClick={onAddToCart}
           disabled={isOutOfStock || !selectedSize}
@@ -145,6 +169,14 @@ const Info: React.FC<InfoProps> = ({ data }) => {
         >
           {isOutOfStock ? "Out of Stock" : "Add to Cart"}
           <ShoppingCart />
+        </Button>
+        <Button
+          onClick={onBuyNow}
+          disabled={isOutOfStock || !selectedSize || isBuyNowClicked} // Disable if out of stock, no size selected, or already clicked
+          className={`flex items-center gap-x-2 ${isOutOfStock || isBuyNowClicked ? "bg-gray-400 text-gray-600 cursor-not-allowed" : ""}`}
+        >
+          Buy Now
+          <ShoppingBag />
         </Button>
       </div>
     </div>

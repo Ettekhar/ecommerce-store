@@ -86,14 +86,18 @@ const OrderList: React.FC<OrderListProps> = () => {
                 <td className="p-4 text-base font-medium text-gray-800">{format(new Date(order.createdAt), "MMMM d, yyyy")}</td>
                 <td className="p-4 text-base font-medium text-gray-800">{order.total}৳</td>
                 <td className="p-4 text-base font-medium">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                    order.status === 'Shipping' ? 'bg-yellow-100 text-blue-800' :
-                    order.status === 'Success' ? 'bg-green-100 text-green-800' :
-                    'bg-red-100 text-red-800'
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                        order.status === 'Shipping' ? 'bg-blue-100 text-blue-800' :
+                        order.status === 'Success' ? 'bg-green-100 text-green-800' :
+                        order.status === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
+                        order.status === 'Hold' ? 'bg-gray-100 text-gray-800' :
+                        order.status === 'Return' ? 'bg-purple-100 text-purple-800' :
+                        order.status === 'Return-Success' ? 'bg-green-100 text-green-800' :
+                        'bg-red-100 text-red-800'
                     }`}>
-                    {order.status}
-                    </span>
+                {order.status}
+                </span>
                 </td>
                 {/* <td className="p-4 text-base font-medium">
                     <button className="flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
