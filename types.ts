@@ -40,3 +40,8 @@ export interface Image {
     id: string;
     url: string;
 };
+
+export interface BlockIps {
+    ipAddress: string;
+    isBlocked: boolean;
+}

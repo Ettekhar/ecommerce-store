@@ -2,22 +2,21 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { BlockIps } from '@/types';
 
-const IpBlocker = ({ children }: { children: React.ReactNode }) => {
+const IpBlocker = ({ children, blockIps }: { children: React.ReactNode, blockIps:BlockIps }) => {
   const [isBlocked, setIsBlocked] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchIpStatus = async () => {
       try {
-        // Get the user's IP address
-        const ipResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/block-ip`);
-        const ipAddress = ipResponse.data.ip;
-        // console.log({ ipAddress });
-        
-        // Check if the IP address is blocked
-        const statusResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/block-ip/${ipAddress}`);
-        if (statusResponse.data.exists) {
+        // Make a single request to get both the IP address and its block status
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/block-ip`);
+        const { ipAddress, isBlocked } = response.data;
+  
+        // Set the block status based on the response
+        if (isBlocked) {
           setIsBlocked(true);
         }
       } catch (error) {
@@ -26,9 +25,10 @@ const IpBlocker = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(false);
       }
     };
-
+  
     fetchIpStatus();
   }, []);
+  
 
   if (isLoading) {
     return (

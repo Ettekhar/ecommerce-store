@@ -8,6 +8,7 @@ import { ToasterProvider } from '@/providers/toast-provider';
 import IpBlocker from '@/components/IpBlocker'; // Import the IpBlocker component
 
 import './globals.css';
+import getBlockIps from '@/actions/get-blockIps';
 
 const font = Urbanist({ subsets: ['latin'] });
 
@@ -16,17 +17,20 @@ export const metadata: Metadata = {
   description: 'Store',
 };
 
-export default function Layout({
+export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const blockIps = await getBlockIps();
+
+  console.log({blockIps});
   return (
     <html lang="en">
       <body className={font.className}>
         <ModalProvider />
         <ToasterProvider />
-        <IpBlocker>
+        <IpBlocker blockIps={blockIps}>
           <Navbar />
           {children}
           <Footer />
