@@ -7,10 +7,15 @@ import Container from "@/components/ui/container";
 export const revalidate = 0;
 
 const HomePage = async () => {
-    const products = await getProducts({ isFeatured: true });
-    // const billboard = await getBillboard("1"); // automation this
-    const getFirstBillBoard = await getBillboard("");
-    const billboard = getFirstBillBoard[0];
+    const [products, getFirstBillBoard] = await Promise.all([
+        getProducts({ isFeatured: true }),
+        getBillboard(""),                   
+    ]);
+  
+      const billboard = getFirstBillBoard[0];
+
+      console.log({billboard});
+    
     return (
         <Container>
             <div className="space-y-10 pb-10">

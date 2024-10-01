@@ -1,12 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { MouseEventHandler } from "react";
-import { Expand, ShoppingCart } from "lucide-react";
-import { useRouter } from "next/navigation";
-
+import { useState, useEffect } from "react";
 import { Product } from "@/types";
 import IconButton from "@/components/ui/icon-button";
+import { Expand, ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
 import Currency from "@/components/ui/currency";
 import usePreviewModal from "@/hooks/use-preview-modal";
 import useCart from "@/hooks/use-cart";
@@ -16,20 +15,28 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const cart = useCart();
     const previewModal = usePreviewModal();
     const router = useRouter();
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            handleNextImage();
+        }, 5000); // Automatically change image every 5 seconds
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, [currentImageIndex]);
 
     const handleClick = () => {
         router.push(`/product/${data?.id}`);
     };
 
-    const onPreview: MouseEventHandler<HTMLButtonElement> = (event) => {
+    const onPreview = (event: React.MouseEvent) => {
         event.stopPropagation();
         previewModal.onOpen(data);
     };
 
-    const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
+    const onAddToCart = (event: React.MouseEvent) => {
         event.stopPropagation();
         cart.addItem(data);
     };
@@ -40,17 +47,40 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
 
     const hasOffer = data.offer > 0;
     const discountPrice = calculateDiscountPrice();
-    const discountPercentage = data.offer;
+
+    const handleNextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % data.images.length);
+    };
+
+    const handlePrevImage = () => {
+        setCurrentImageIndex((prevIndex) =>
+            prevIndex === 0 ? data.images.length - 1 : prevIndex - 1
+        );
+    };
 
     return (
         <div onClick={handleClick} className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4">
-            <div className="aspect-square rounded-xl bg-gray-100 relative">
-                <Image
-                    src={data?.images?.[0]?.url}
-                    fill
-                    alt="Image"
-                    className="aspect-square object-cover rounded-md"
-                />
+            {/* Carousel container */}
+            <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden">
+                {/* Image rendering */}
+                <div 
+                    className="flex transition-transform duration-500 ease-in-out"
+                    style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+                >
+                    {data.images.map((image, index) => (
+                        <div key={index} className="relative w-full h-64 flex-shrink-0">
+                            <Image
+                                src={image.url}
+                                alt={`Image ${image.url}`}
+                                layout="fill" // This ensures the image fills the container
+                                objectFit="cover" // This will maintain the aspect ratio of the image
+                                className="rounded-md" // Class for rounded corners
+                            />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Preview and Add to Cart Icons */}
                 <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
                     <div className="flex gap-x-6 justify-center">
                         <IconButton
@@ -64,6 +94,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Product Info */}
             <div className="flex flex-col gap-y-2">
                 <div className="flex justify-between items-start">
                     <div>
@@ -72,7 +104,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
                     </div>
                     {hasOffer && (
                         <div className="flex flex-col items-end">
-                            <span className="text-red-500 text-xl font-semibold">{discountPercentage}% OFF</span>
+                            <span className="text-red-500 text-xl font-semibold">{data.offer}% OFF</span>
                             <span className="line-through text-gray-500 text-lg">
                                 <Currency value={data.price} />
                             </span>

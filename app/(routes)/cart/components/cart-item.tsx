@@ -57,7 +57,7 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
     const discountPrice = calculateDiscountPrice();
 
     // console.log({ data, selectedSize });
-    // console.log({hasOffer,discountPrice,data,selectedSize})
+    console.log({hasOffer,discountPrice,data,selectedSize})
 
     return (
         <li className="flex py-6 border-b border-gray-300">

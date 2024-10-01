@@ -9,7 +9,6 @@ import useCart from "@/hooks/use-cart";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import usePreviewModal from "@/hooks/use-preview-modal";
-import { trackAddToCart } from "@/lib/facebookPixel";
 
 interface InfoProps {
   data: Product;
@@ -36,10 +35,6 @@ const Info: React.FC<InfoProps> = ({ data }) => {
     for (let i = 0; i < quantity; i++) {
       cart.addItem(data, selectedSize);
     }
-
-    // Tract the Add to Cart Event For FB
-    trackAddToCart(data.id, data.name, Number(data.price));
-    
     toast.success("Item(s) added to cart.");
   };
 
@@ -86,8 +81,6 @@ const Info: React.FC<InfoProps> = ({ data }) => {
   const isOutOfStock = data.stock <= 0;
   const isLowStock = data.stock > 0 && data.stock < 10;
 
-  console.log("Inside Info: ",{data});
-
   return (
     <div className="p-6 border rounded-lg shadow-md">
       <h1 className="text-3xl font-bold text-gray-900">{data.name}</h1>
@@ -124,12 +117,9 @@ const Info: React.FC<InfoProps> = ({ data }) => {
         </div>
       </div>
       <hr className="my-4" />
-     
-      <div className="mt-2 mb-1 text-blue-800 text-base font-medium bg-blue-100 p-3 rounded-lg shadow-sm flex items-center gap-2">
-        Please choose a size to order.
+      <div className="mt-2 text-blue-500 text-sm">
+        Please choose a size.
       </div>
-   
-
       <div className="flex flex-col gap-y-6">
         <div className="flex items-center gap-x-4">
           <h3 className="font-semibold text-black">Size:</h3>
@@ -171,25 +161,42 @@ const Info: React.FC<InfoProps> = ({ data }) => {
           </Button>
         </div>
       </div>
-     
-      <div className="mt-10 flex flex-col md:flex-row items-center gap-y-3 gap-x-3">
+      {/* <div className="mt-10 flex items-center gap-x-3">
         <Button
           onClick={onAddToCart}
           disabled={isOutOfStock || !selectedSize}
-          className={`w-full md:w-auto flex items-center justify-center gap-x-2 ${isOutOfStock ? "bg-gray-400 text-gray-600 cursor-not-allowed" : ""}`}
+          className={`flex items-center gap-x-2 ${isOutOfStock ? "bg-gray-400 text-gray-600 cursor-not-allowed" : ""}`}
         >
           {isOutOfStock ? "Out of Stock" : "Add to Cart"}
           <ShoppingCart />
         </Button>
         <Button
           onClick={onBuyNow}
-          disabled={isOutOfStock || !selectedSize || isBuyNowClicked}
-          className={`w-full md:w-auto flex items-center justify-center gap-x-2 ${isOutOfStock || isBuyNowClicked ? "bg-gray-400 text-gray-600 cursor-not-allowed" : ""}`}
+          disabled={isOutOfStock || !selectedSize || isBuyNowClicked} // Disable if out of stock, no size selected, or already clicked
+          className={`flex items-center gap-x-2 ${isOutOfStock || isBuyNowClicked ? "bg-gray-400 text-gray-600 cursor-not-allowed" : ""}`}
         >
           Buy Now
           <ShoppingBag />
         </Button>
-      </div>
+      </div> */}
+      <div className="mt-10 flex flex-col md:flex-row items-center gap-y-3 gap-x-3">
+      <Button
+        onClick={onAddToCart}
+        disabled={isOutOfStock || !selectedSize}
+        className={`flex items-center gap-x-2 ${isOutOfStock ? "bg-gray-400 text-gray-600 cursor-not-allowed" : ""}`}
+      >
+        {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+        <ShoppingCart />
+      </Button>
+      <Button
+        onClick={onBuyNow}
+        disabled={isOutOfStock || !selectedSize || isBuyNowClicked}
+        className={`flex items-center gap-x-2 ${isOutOfStock || isBuyNowClicked ? "bg-gray-400 text-gray-600 cursor-not-allowed" : ""}`}
+      >
+        Buy Now
+        <ShoppingBag />
+      </Button>
+    </div>
 
 
     </div>

@@ -4,6 +4,8 @@ import { Product } from "@/types";
 import toast from "react-hot-toast";
 
 interface CartItem extends Product {
+  offer: number;
+  price: number;
   quantity: number;
   selectedSize?: { name: string, value: string }; // Updated to handle size name and value
 }
@@ -43,7 +45,10 @@ const useCart = create(
             toast.error("Maximum Item Added.");
           }
         } else {
-          set({ items: [...get().items, { ...data, quantity: 1, selectedSize }] });
+          set({ items: [...get().items, {
+            ...data, quantity: 1, selectedSize,
+            offer: data.offer
+          }] });
           toast.success("Item added to cart.");
         }
         console.log("Updated items:", get().items);

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 
 const OrderSuccess = () => {
   const params = useParams();

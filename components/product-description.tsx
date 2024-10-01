@@ -1,25 +1,24 @@
 'use client';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import ReviewForm from './review-form';
+import { Review,AvatarImage } from '@/types';
 
 // Dynamically import React Quill to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
-interface Review {
-    author: string;
-    comment: string;
-    rating: number;
-}
 
 interface ProductDescriptionProps {
     description: string; // This should be HTML or rich text format
-    reviews?: Review[];
+    reviews: Review[];
+    avatar: AvatarImage[];
 }
 
-const ProductDescription: React.FC<ProductDescriptionProps> = ({ description, reviews = [] }) => {
+const ProductDescription: React.FC<ProductDescriptionProps> = ({ description,reviews,avatar }) => {
     const [activeTab, setActiveTab] = useState('description');
-    const hasReviews = reviews.length > 0;
 
+    console.log({reviews,avatar});
+    
     const renderContent = () => {
         switch (activeTab) {
             case 'description':
@@ -32,22 +31,12 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({ description, re
                         />
                     </div>
                 );
-            case 'reviews':
-                return reviews.length === 0 ? (
-                    <p className="mt-2 text-gray-600">No reviews yet.</p>
-                ) : (
-                    <div className="mt-4 space-y-4">
-                        {reviews.map((review, index) => (
-                            <div key={index} className="border-t border-gray-200 pt-4">
-                                <p className="text-gray-800 font-medium">{review.author}</p>
-                                <div className="mt-1 text-yellow-500">
-                                    {Array(review.rating).fill('★').join('')} {Array(5 - review.rating).fill('☆').join('')}
-                                </div>
-                                <p className="mt-2 text-gray-600">{review.comment}</p>
-                            </div>
-                        ))}
-                    </div>
-                );
+                case 'reviews':
+                    return (
+                        <div className="mt-4 space-y-4">
+                            <ReviewForm initialReviews={reviews} avatar={avatar} /> {/* Include the ReviewForm component */}
+                        </div>
+                    );
             default:
                 return null;
         }

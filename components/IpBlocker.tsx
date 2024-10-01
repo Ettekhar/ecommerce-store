@@ -1,44 +1,27 @@
-'use client'; // This ensures that this component is rendered on the client side
+'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { BlockIps } from '@/types';
 
-const IpBlocker = ({ children, blockIps }: { children: React.ReactNode, blockIps:BlockIps }) => {
-  const [isBlocked, setIsBlocked] = useState<boolean>(false);
+const IpBlocker = ({ children, blockIps }: { children: React.ReactNode, blockIps: BlockIps }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchIpStatus = async () => {
-      try {
-        // Make a single request to get both the IP address and its block status
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/block-ip`);
-        const { ipAddress, isBlocked } = response.data;
-  
-        // Set the block status based on the response
-        if (isBlocked) {
-          setIsBlocked(true);
-        }
-      } catch (error) {
-        console.error('Error fetching IP status:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-  
-    fetchIpStatus();
+    // Simulate loading to show the spinner (can adjust the duration or remove if not necessary)
+    const timeoutId = setTimeout(() => setIsLoading(false), 500);
+
+    return () => clearTimeout(timeoutId);
   }, []);
-  
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="rounded-md h-12 w-12 border-4 border-t-4 border-blue-500 animate-spin absolute"></div>
+        <div className="rounded-md h-12 w-12 border-4 border-t-4 border-blue-500 animate-spin"></div>
       </div>
     );
   }
 
-  if (isBlocked) {
+  if (blockIps.isBlocked) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-red-100">
         <div className="text-center p-6 bg-white rounded-lg shadow-lg">

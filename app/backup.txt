@@ -1,7 +1,3 @@
-// app/layout.tsx
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Toaster, toast } from 'react-hot-toast';
 import type { Metadata } from 'next';
 import { Urbanist } from 'next/font/google';
 
@@ -9,8 +5,10 @@ import Footer from '@/components/footer';
 import Navbar from '@/components/navbar';
 import ModalProvider from '@/providers/modal-provider';
 import { ToasterProvider } from '@/providers/toast-provider';
+import IpBlocker from '@/components/IpBlocker'; // Import the IpBlocker component
 
 import './globals.css';
+import getBlockIps from '@/actions/get-blockIps';
 
 const font = Urbanist({ subsets: ['latin'] });
 
@@ -19,41 +17,24 @@ export const metadata: Metadata = {
   description: 'Store',
 };
 
-export default function RootLayout({
+export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [isBlocked, setIsBlocked] = useState<boolean>(false);
+  const blockIps = await getBlockIps();
 
-  useEffect(() => {
-    const fetchIpStatus = async () => {
-      try {
-        const ipResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/get-user-ip`);
-        const ipAddress = ipResponse.data.ip;
-
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/block-ip/${ipAddress}`);
-        if (response.data.exists) {
-          setIsBlocked(true);
-          toast.error("Your IP address is blocked for 3 days.");
-        }
-      } catch (error) {
-        console.error('Error fetching IP status:', error);
-      }
-    };
-
-    fetchIpStatus();
-  }, []);
-
+  console.log({blockIps});
   return (
     <html lang="en">
       <body className={font.className}>
         <ModalProvider />
         <ToasterProvider />
-        <Navbar />
-        {children}
-        <Footer />
-        <Toaster />
+        <IpBlocker blockIps={blockIps}>
+          <Navbar />
+          {children}
+          <Footer />
+        </IpBlocker>
       </body>
     </html>
   );
