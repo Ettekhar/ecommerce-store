@@ -73,6 +73,22 @@ export interface SiteSettings {
     shippingOptions: any;       // Define the actual type for shipping 
     createdAt: Date;
     updatedAt: Date;
-  }
-  
+}
+
+export interface Coupon {
+    isValid: boolean;
+    data: any;
+    id: string;                      // Unique identifier for the coupon
+    code: string;                    // Unique code for the coupon
+    discountAmount: number;          // Discount amount (use Decimal or number type)
+    discountType: 'PERCENTAGE' | 'FIXED'; // Type of discount
+    startDate: Date;                 // Start date of the coupon validity
+    endDate: Date;                   // End date of the coupon validity
+    isActive: boolean;               // Status of the coupon (active/inactive)
+    usageCount: number;              // Count of how many times the coupon has been used
+    maxUsageLimit?: number;          // Optional limit for usage
+    createdAt: Date;                 // Timestamp of when the coupon was created
+    updatedAt: Date;                 // Timestamp of the last update
+}
+
 

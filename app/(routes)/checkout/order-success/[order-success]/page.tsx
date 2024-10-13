@@ -15,7 +15,7 @@ const OrderSuccess = () => {
 
   // Replace with the actual phone number logic
   const phoneNumber = params['order-success']; // This should be dynamically retrieved
-  console.log({params});
+  // console.log({params});
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 p-10 bg-white rounded-xl shadow-lg">
@@ -24,7 +24,7 @@ const OrderSuccess = () => {
           <p className="mt-2 text-sm text-gray-600">Your order has been placed successfully. We will process it shortly.</p>
         </div>
         <div className="flex items-center justify-center mt-6">
-          <img src="/thank-you.webp" alt="Thank You" className="w-40 h-40" />
+          <Image height={500} width={500} src="/images/thank-you.webp" alt="Thank You" className="w-40 h-40" />
         </div>
         <div className="text-center mt-6">
           <p className="text-gray-600">You will receive an email confirmation shortly.</p>

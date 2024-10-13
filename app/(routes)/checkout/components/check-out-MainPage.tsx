@@ -10,6 +10,7 @@ import Button from '@/components/ui/button';
 import Currency from '@/components/ui/currency';
 import { trackPageView, trackPurchase } from '@/lib/facebookPixel';
 import Image from 'next/image';
+import getCoupons from '@/actions/get-couponValidation';
 
 // Define the types for your form data and shipping options
 interface ShippingOption {
@@ -63,15 +64,20 @@ const CheckOutMainPage = ({ shippingOptions }: { shippingOptions: ShippingOption
     const validateCoupon = async (code: string) => {
         setCouponLoading(true);
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/coupons/${code}`);
-            const coupon = response.data;
+            // const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/coupons/${code}`,{
+            //     headers: { 'Cache-Control': 'no-cache' }
+            // });
+
+            const response = await getCoupons(code);
+            const coupon = response;
+            console.log("coupons",{coupon,response});
             setCouponInfo(coupon);
     
             // Check if the coupon is valid and active
             if (coupon.isValid && coupon.isActive) {
                 let discountAmount = 0;
                 const totalPrice = calculateTotalPrice();
-                console.log({totalPrice})
+                // console.log({totalPrice})
                 if (coupon.discountType === 'PERCENTAGE') {
                     discountAmount = (coupon.discountAmount / 100) * totalPrice;
                     toast.success(`Coupon applied: ${coupon.discountAmount}% off!`);
@@ -123,7 +129,7 @@ const CheckOutMainPage = ({ shippingOptions }: { shippingOptions: ShippingOption
             },
             phoneNumber: data.phone,
         };
-
+        // console.log({payload});
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, payload);
             trackPurchase(response.data.orderId, calculateTotalPrice());
