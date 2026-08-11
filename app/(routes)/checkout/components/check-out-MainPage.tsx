@@ -236,7 +236,7 @@ const CheckOutMainPage = ({ shippingOptions }: { shippingOptions: ShippingOption
 
                 {items.map((item) => (
                     <div key={item.id} className="flex items-center mb-4">
-                        <Image height={100} width={100} src={item.images[0].url} alt={item.name} className="w-16 h-16 rounded-lg mr-4 object-cover" />
+                        <Image height={100} width={100} src={item?.images?.[0]?.url || ""} alt={item?.name || "Product"} className="w-16 h-16 rounded-lg mr-4 object-cover" />
                         <div className="flex-1">
                             <p className="font-medium text-gray-800">{item.name} ({item?.selectedSize?.value || ""}) x {item.quantity} </p>
                             <Currency value={item.offer > 0 ? item.price * (1 - item.offer / 100) : item.price} />
