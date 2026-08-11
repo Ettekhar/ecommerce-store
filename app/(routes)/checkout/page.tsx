@@ -9,7 +9,7 @@ const Checkout: React.FC<CheckoutPagesProps> = async ({}) => {
     
     const siteSettings: SiteSettings[] = await getSiteInfos();
 
-    const shippingOptions = siteSettings[0].shippingOptions;
+    const shippingOptions = siteSettings?.[0]?.shippingOptions || [];
 
     return (
         <div className="bg-white">

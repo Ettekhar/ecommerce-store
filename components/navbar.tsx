@@ -13,20 +13,24 @@ const Navbar = async () => {
     getCategories(),
     getSiteInfos(),
   ]);
-  const logo = siteSetting[0].logoUrl;
+  const logo = siteSetting?.[0]?.logoUrl;
 
   return (
     <div className="border-b">
       <Container>
         <div className="relative px-4 sm:px-6 lg:px-8 flex h-16 items-center">
-          <Link href="/" className="ml-4 flex lg:ml-0 gap-x-2">
-            <Image
-              src={logo}
-              alt="Logo"
-              height={220} // Increased for larger size
-              width={220}  // Increased for larger size
-              className="h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 object-contain" // Increased sizes for all screen sizes
-            />
+          <Link href="/" className="ml-4 flex lg:ml-0 gap-x-2 items-center">
+            {logo ? (
+              <Image
+                src={logo}
+                alt="Logo"
+                height={220} // Increased for larger size
+                width={220}  // Increased for larger size
+                className="h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 object-contain" // Increased sizes for all screen sizes
+              />
+            ) : (
+              <p className="font-bold text-xl">STORE</p>
+            )}
           </Link>
           <MainNav data={categories} />
           <NavbarActions />
